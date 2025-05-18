@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .slot-machine { margin: 20px auto; }
+        .reels { display: flex; justify-content: center; margin: 20px 0; }
+        .reel { width: 80px; height: 80px; border: 2px solid #000; margin: 0 10px; 
+                display: flex; align-items: center; justify-content: center; 
+                font-size: 40px; background: #fff; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Slot Machine</h1>
+    <div class="slot-machine">
+        <div class="reels">
+            <div class="reel" id="reel1">🍒</div>
+            <div class="reel" id="reel2">🍋</div>
+            <div class="reel" id="reel3">🍊</div>
+        </div>
+        <button id="spin">SPIN</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        const symbols = ['🍒', '🍋', '🍊', '🍇', '🍉', '7'];
+        const reels = [
+            document.getElementById('reel1'),
+            document.getElementById('reel2'),
+            document.getElementById('reel3')
+        ];
+        
+        document.getElementById('spin').addEventListener('click', () => {
+            // Disable button during spin
+            document.getElementById('spin').disabled = true;
+            document.getElementById('result').textContent = '';
+            
+            // Spin animation
+            let spins = 0;
+            const spinInterval = setInterval(() => {
+                reels.forEach(reel => {
+                    reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                });
+                spins++;
+                
+                if (spins > 10) {
+                    clearInterval(spinInterval);
+                    checkResult();
+                    document.getElementById('spin').disabled = false;
+                }
+            }, 100);
+        });
+        
+        function checkResult() {
+            const values = reels.map(reel => reel.textContent);
+            
+            if (values[0] === values[1] && values[1] === values[2]) {
+                document.getElementById('result').textContent = 'You win!';
+                // Здесь можно добавить логику для бота через Telegram.WebApp.sendData()
+            } else {
+                document.getElementById('result').textContent = 'Try again!';
+            }
+        }
+        
+        // Инициализация Telegram WebApp
+        if (window.Telegram && Telegram.WebApp) {
+            Telegram.WebApp.expand();
+            Telegram.WebApp.enableClosingConfirmation();
+        }
+    </script>
+</body>
+</html>
