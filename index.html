@@ -3,19 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Casino Game1111</title>
+    <title>Casino Slot Machine</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        .slot-machine { margin: 20px auto; }
-        .reels { display: flex; justify-content: center; margin: 20px 0; }
-        .reel { width: 80px; height: 80px; border: 2px solid #000; margin: 0 10px; 
-                display: flex; align-items: center; justify-content: center; 
-                font-size: 40px; background: #fff; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 20px;
+            background-color: #212121;
+            color: white;
+            margin: 0;
+            padding-bottom: 60px; /* Для кнопки Telegram */
+        }
+        .slot-machine { 
+            margin: 20px auto; 
+            max-width: 400px;
+        }
+        .reels { 
+            display: flex; 
+            justify-content: center; 
+            margin: 20px 0; 
+        }
+        .reel { 
+            width: 80px; 
+            height: 80px; 
+            border: 2px solid #FFD700; 
+            margin: 0 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 40px; 
+            background: #333; 
+            border-radius: 10px;
+        }
+        button { 
+            padding: 12px 30px; 
+            font-size: 18px; 
+            cursor: pointer; 
+            background: #FFD700;
+            color: #000;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        #result {
+            font-size: 24px;
+            margin: 20px 0;
+            min-height: 30px;
+            color: #FFD700;
+        }
+        .win-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 100;
+        }
+        .win-animation img {
+            max-width: 80%;
+            border-radius: 20px;
+        }
+        .win-text {
+            color: #FFD700;
+            font-size: 32px;
+            margin-top: 20px;
+            text-shadow: 0 0 10px gold;
+        }
     </style>
 </head>
 <body>
-    <h1>Slot Machine1111</h1>
+    <h1>🎰 Telegram Slot Machine</h1>
     <div class="slot-machine">
         <div class="reels">
             <div class="reel" id="reel1">🍒</div>
@@ -26,18 +89,33 @@
         <p id="result"></p>
     </div>
 
+    <div id="winAnimation" class="win-animation" style="display: none;">
+        <img src="https://i.gifer.com/7VE.gif" alt="Win animation">
+        <div class="win-text">YOU WIN!</div>
+    </div>
+
     <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.expand(); // Развернуть на весь экран
+            tg.MainButton.setText("Закрыть").show().onClick(() => tg.close());
+            tg.enableClosingConfirmation();
+        }
+
         const symbols = ['🍒', '🍋', '🍊', '🍇', '🍉', '7'];
         const reels = [
             document.getElementById('reel1'),
             document.getElementById('reel2'),
             document.getElementById('reel3')
         ];
+        const winAnimation = document.getElementById('winAnimation');
         
         document.getElementById('spin').addEventListener('click', () => {
             // Disable button during spin
             document.getElementById('spin').disabled = true;
             document.getElementById('result').textContent = '';
+            winAnimation.style.display = 'none';
             
             // Spin animation
             let spins = 0;
@@ -59,17 +137,37 @@
             const values = reels.map(reel => reel.textContent);
             
             if (values[0] === values[1] && values[1] === values[2]) {
-                document.getElementById('result').textContent = 'You win!';
-                // Здесь можно добавить логику для бота через Telegram.WebApp.sendData()
+                showWinAnimation();
+                document.getElementById('result').textContent = 'JACKPOT!';
+                
+                // Можно отправить данные в бота
+                if (tg) {
+                    tg.sendData(JSON.stringify({ win: true, combination: values[0] }));
+                }
             } else {
                 document.getElementById('result').textContent = 'Try again!';
             }
         }
         
-        // Инициализация Telegram WebApp
-        if (window.Telegram && Telegram.WebApp) {
-            Telegram.WebApp.expand();
-            Telegram.WebApp.enableClosingConfirmation();
+        function showWinAnimation() {
+            winAnimation.style.display = 'flex';
+            
+            // Автоматически скрываем через 3 секунды
+            setTimeout(() => {
+                winAnimation.style.display = 'none';
+            }, 3000);
+        }
+
+        // Если не в Telegram, показываем кнопку закрытия
+        if (!tg) {
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = 'Закрыть';
+            closeBtn.style.position = 'fixed';
+            closeBtn.style.bottom = '20px';
+            closeBtn.style.left = '50%';
+            closeBtn.style.transform = 'translateX(-50%)';
+            closeBtn.onclick = () => alert('В Telegram эта кнопка закрывает приложение');
+            document.body.appendChild(closeBtn);
         }
     </script>
 </body>
