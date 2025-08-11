@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Slots</title>
+    <title>Casino Slot Machine</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -12,37 +12,7 @@
             background-color: #212121;
             color: white;
             margin: 0;
-            padding-bottom: 70px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .balance {
-            font-size: 20px;
-            color: #FFD700;
-        }
-        .bet-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            justify-content: center;
-            margin: 15px 0;
-        }
-        .bet-btn {
-            padding: 5px 10px;
-            background: #333;
-            border: 1px solid #FFD700;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .current-bet {
-            font-size: 18px;
-            color: #FFD700;
-            min-width: 50px;
+            padding-bottom: 60px; /* Для кнопки Telegram */
         }
         .slot-machine { 
             margin: 20px auto; 
@@ -74,7 +44,7 @@
             border: none;
             border-radius: 20px;
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 20px;
         }
         #result {
             font-size: 24px;
@@ -105,135 +75,34 @@
             margin-top: 20px;
             text-shadow: 0 0 10px gold;
         }
-        .admin-panel {
-            margin-top: 30px;
-            padding: 15px;
-            border-top: 1px solid #444;
-            display: none;
-        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="balance">💰 <span id="coins">1000</span></div>
-        <div class="current-bet" id="currentBet">100</div>
-    </div>
-
-    <h1>🎰 Golden Slots</h1>
-    
-    <div class="bet-controls">
-        <button class="bet-btn" onclick="changeBet(-50)">-50</button>
-        <button class="bet-btn" onclick="changeBet(-10)">-10</button>
-        <button class="bet-btn" onclick="changeBet(10)">+10</button>
-        <button class="bet-btn" onclick="changeBet(50)">+50</button>
-    </div>
-
+    <h1>🎰 Telegram Slot Machine</h1>
     <div class="slot-machine">
         <div class="reels">
             <div class="reel" id="reel1">🍒</div>
             <div class="reel" id="reel2">🍋</div>
             <div class="reel" id="reel3">🍊</div>
         </div>
-        <button id="spin">SPIN (100)</button>
+        <button id="spin">SPIN</button>
         <p id="result"></p>
     </div>
 
     <div id="winAnimation" class="win-animation" style="display: none;">
         <img src="https://i.gifer.com/7VE.gif" alt="Win animation">
-        <div class="win-text" id="winMessage">YOU WIN!</div>
-    </div>
-
-    <div class="admin-panel" id="adminPanel">
-        <h3>👑 Admin Panel</h3>
-        <input type="number" id="adminCoins" placeholder="Amount">
-        <button onclick="addCoins()">Add Coins</button>
-        <p id="adminMessage"></p>
+        <div class="win-text">YOU WIN!</div>
     </div>
 
     <script>
         // Инициализация Telegram WebApp
         const tg = window.Telegram?.WebApp;
-        let userId = null;
-        let isAdmin = false;
-        
-        // Настройки игры
-        let coins = 1000;
-        let currentBet = 100;
-        const minBet = 10;
-        const maxBet = 500;
-        
-        // Сообщения для разных исходов
-        const loseMessages = [
-            "Almost there!",
-            "Better luck next time!",
-            "Try again!",
-            "So close!",
-            "Not this time!"
-        ];
-        
-        // Инициализация приложения
         if (tg) {
-            tg.expand();
+            tg.expand(); // Развернуть на весь экран
             tg.MainButton.setText("Закрыть").show().onClick(() => tg.close());
             tg.enableClosingConfirmation();
-            
-            // Получаем данные пользователя
-            if (tg.initDataUnsafe?.user) {
-                userId = tg.initDataUnsafe.user.id;
-                isAdmin = userId === 123456789; // Замените на ваш ID админа
-                
-                // Загружаем сохраненные данные
-                loadUserData();
-            }
-            
-            // Показываем админ-панель если это админ
-            if (isAdmin) {
-                document.getElementById('adminPanel').style.display = 'block';
-            }
         }
-        
-        // Загрузка данных пользователя
-        function loadUserData() {
-            // В реальном приложении здесь будет запрос к серверу
-            const savedData = localStorage.getItem(`slot_user_${userId}`);
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                coins = data.coins || 1000;
-                currentBet = data.bet || 100;
-                updateUI();
-            }
-        }
-        
-        // Сохранение данных пользователя
-        function saveUserData() {
-            const data = {
-                coins: coins,
-                bet: currentBet
-            };
-            // В реальном приложении здесь будет отправка на сервер
-            localStorage.setItem(`slot_user_${userId}`, JSON.stringify(data));
-        }
-        
-        // Обновление интерфейса
-        function updateUI() {
-            document.getElementById('coins').textContent = coins;
-            document.getElementById('currentBet').textContent = currentBet;
-            document.getElementById('spin').textContent = `SPIN (${currentBet})`;
-            saveUserData();
-        }
-        
-        // Изменение ставки
-        function changeBet(amount) {
-            currentBet += amount;
-            
-            // Проверка лимитов
-            if (currentBet < minBet) currentBet = minBet;
-            if (currentBet > maxBet) currentBet = maxBet;
-            if (currentBet > coins) currentBet = coins;
-            
-            updateUI();
-        }
-        
+
         const symbols = ['🍒', '🍋', '🍊', '🍇', '🍉', '7'];
         const reels = [
             document.getElementById('reel1'),
@@ -241,18 +110,8 @@
             document.getElementById('reel3')
         ];
         const winAnimation = document.getElementById('winAnimation');
-        const winMessage = document.getElementById('winMessage');
         
         document.getElementById('spin').addEventListener('click', () => {
-            if (coins < currentBet) {
-                document.getElementById('result').textContent = "Not enough coins!";
-                return;
-            }
-            
-            // Снимаем ставку
-            coins -= currentBet;
-            updateUI();
-            
             // Disable button during spin
             document.getElementById('spin').disabled = true;
             document.getElementById('result').textContent = '';
@@ -276,63 +135,29 @@
         
         function checkResult() {
             const values = reels.map(reel => reel.textContent);
-            let winAmount = 0;
-            let message = "";
             
-            // Проверка комбинаций
             if (values[0] === values[1] && values[1] === values[2]) {
-                // 3 одинаковых - x5
-                winAmount = currentBet * 5;
-                message = `JACKPOT! +${winAmount}`;
-                showWinAnimation(`JACKPOT! +${winAmount}`);
-            } 
-            else if (values[0] === values[1] || values[1] === values[2] || values[0] === values[2]) {
-                // 2 одинаковых - возврат ставки
-                winAmount = currentBet;
-                message = `Same two! +${winAmount}`;
+                showWinAnimation();
+                document.getElementById('result').textContent = 'JACKPOT!';
+                
+                // Можно отправить данные в бота
+                if (tg) {
+                    tg.sendData(JSON.stringify({ win: true, combination: values[0] }));
+                }
+            } else {
+                document.getElementById('result').textContent = 'Try again!';
             }
-            else {
-                // Проигрыш
-                message = loseMessages[Math.floor(Math.random() * loseMessages.length)];
-            }
-            
-            // Начисляем выигрыш
-            if (winAmount > 0) {
-                coins += winAmount;
-                updateUI();
-            }
-            
-            document.getElementById('result').textContent = message;
         }
         
-        function showWinAnimation(message) {
-            winMessage.textContent = message;
+        function showWinAnimation() {
             winAnimation.style.display = 'flex';
             
+            // Автоматически скрываем через 3 секунды
             setTimeout(() => {
                 winAnimation.style.display = 'none';
             }, 3000);
         }
-        
-        // Админ-функции
-        function addCoins() {
-            if (!isAdmin) return;
-            
-            const amount = parseInt(document.getElementById('adminCoins').value);
-            if (isNaN(amount) {
-                document.getElementById('adminMessage').textContent = "Enter valid amount";
-                return;
-            }
-            
-            coins += amount;
-            updateUI();
-            document.getElementById('adminMessage').textContent = `Added ${amount} coins`;
-            document.getElementById('adminCoins').value = "";
-        }
-        
-        // Инициализация
-        updateUI();
-        
+
         // Если не в Telegram, показываем кнопку закрытия
         if (!tg) {
             const closeBtn = document.createElement('button');
