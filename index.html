@@ -92,10 +92,7 @@
             background-color: rgba(33, 33, 33, 0.8);
         }
         .dont-press-btn {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
+
             padding: 10px 25px;
             font-size: 16px;
             cursor: pointer;
@@ -125,6 +122,9 @@
             <div class="reel" id="reel3">🍊</div>
         </div>
         <button id="spin">КРУТИТЬ</button>
+                    <button class="dont-press-btn" id="dontPressBtn">НЕ ЖМИ!</button>
+
+
         <p id="result"></p>
 
         <div class="animation-container">
@@ -135,7 +135,6 @@
         </div>
     </div>
 
-    <button class="dont-press-btn" id="dontPressBtn">НЕ НАЖИМАТЬ</button>
 
     <div class="credits">
         задумал | задизайнил | запрогал<br>
@@ -193,7 +192,7 @@
             'https://i.giphy.com/sSnN2QaBF222cP25j9.webp',
             'https://i.giphy.com/G2MaBCCxS0WmMLpZGl.webp',
             'https://i.giphy.com/IwAZ6dvvvaTtdI8SD5.webp',
-            
+
 
 
         ];
@@ -269,6 +268,7 @@
                 animationText.textContent = text;
                 currentAnimationUrl = gifUrl;
             }
+            document.getElementById('result').textContent = text;
 
 
             animation.style.display = 'flex';
