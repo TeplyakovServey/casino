@@ -16,7 +16,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            padding-bottom: 120px; /* Увеличили место для кредитов и кнопки */
+            padding-bottom: 120px;
             box-sizing: border-box;
         }
         .slot-machine {
@@ -73,15 +73,17 @@
             width: 300px;
             border-radius: 20px;
             margin-bottom: 10px;
+            animation: pulse 1.5s infinite;
         }
         .animation-text {
             color: #FFD700;
             font-size: 24px;
             text-shadow: 0 0 10px gold;
+            animation: pulse 1.5s infinite;
         }
         .credits {
             position: fixed;
-            bottom: 80px; /* Подняли выше для кнопки */
+            bottom: 20px;
             left: 0;
             right: 0;
             font-size: 14px;
@@ -91,7 +93,7 @@
         }
         .dont-press-btn {
             position: fixed;
-            bottom: 20px;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
             padding: 10px 25px;
@@ -106,6 +108,11 @@
         }
         .dont-press-btn:hover {
             background: #FF3333;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
@@ -139,7 +146,7 @@
         // Инициализация Telegram WebApp
         const tg = window.Telegram?.WebApp;
         if (tg) {
-            tg.expand(); // Развернуть на весь экран
+            tg.expand();
             tg.enableClosingConfirmation();
         }
 
@@ -153,55 +160,72 @@
         const animationGif = document.getElementById('animationGif');
         const animationText = document.getElementById('animationText');
 
-        let currentAnimationTimeout = null;
+        let isSpinning = false;
+        let currentAnimationUrl = '';
 
-        // Тексты для разных результатов
         const winTexts = [
-            'ДЖЕКПОТ!',
-            'УРА ПОБЕДА!',
-            'ВЕЗЕНИЕ!',
-            'ДА ТЫ ВЕЗУНЧИК!',
-            'ВАУ КРУТО!'
+
+            'СЮЮЮЮЮДА!',
+            'ПОЧТИ КАК БИЛЕТ В САМАРУ!',
+            'КРАСАВИЦА!',
+            'ИМБА!'
         ];
 
         const loseTexts = [
-            'Попробуй еще раз!',
-            'Тебе повезет!',
-            'Давай давай!',
-            'Крутим дальше!',
-            'Почти получилось!'
+            'СКАМ ебучий!',
+            'Не регает!',
+            'АНЛУЧКА!',
+            'ДА БЛЯЯЯЯЯЯЯ!',
+            'Почти получилось!',
+            'Не в этот раз!',
+            "НУ КААААААК?!",
+            "ОТДАЙ МОИ ДЕНЬГИ!",
+            "НУ И ЧОООО?!",
+            "ДА ТЫ ЗАЕБАЛ!",
+            "ОПЯТЬ ЭТОТ ГОВНОСЛОТ!"
         ];
 
-        // Анимации для выигрыша
         const winAnimations = [
             'https://i.giphy.com/nNxT5qXR02FOM.webp',
-            'https://i.giphy.com/XreQmk7ETCak0.webp',
-            'https://i.giphy.com/3orieSqFTwJNmgQnC8.webp',
-            'https://i.giphy.com/3o7abKhOpu0NwenH3O.webp'
+            'https://i.giphy.com/lMsT2f47tDxFMYdJMC.webp',
+            'https://i.giphy.com/l3fQf1OEAq0iri9RC.webp',
+            'https://i.giphy.com/o75ajIFH0QnQC3nCeD.webp',
+            'https://i.giphy.com/sSnN2QaBF222cP25j9.webp',
+            'https://i.giphy.com/G2MaBCCxS0WmMLpZGl.webp',
+            'https://i.giphy.com/IwAZ6dvvvaTtdI8SD5.webp',
+            
+
+
         ];
 
-        // Анимации для проигрыша
         const loseAnimations = [
-            'https://i.giphy.com/3o7TKsQ8E2gBvZMDgY.webp',
-            'https://i.giphy.com/3ohs4kI2X9r7O8Zto0.webp',
-            'https://i.giphy.com/l0HU7uQMSVJDOG0E0.webp'
+            'https://i.giphy.com/jnQYWZ0T4mkhCmkzcn.webp',
+            'https://i.giphy.com/pynZagVcYxVUk.webp',
+            'https://i.giphy.com/KDRv3QggAjyo.webp',
+            'https://i.giphy.com/2rtQMJvhzOnRe.webp',
+            'https://i.giphy.com/3o752gZdDHjObx309W.webp',
+            'https://i.giphy.com/3og0IBPvKRD7CZJTGg.webp',
+            'https://i.giphy.com/1UU8KKKD5EQmzPLPPm.webp',
+            'https://i.giphy.com/xFVleyvbLUM7ChzQdh.webp',
+            'https://i.giphy.com/3o7btUvXYAIpN4pEbu.webp',
+            'https://i.giphy.com/opRAG6bNFdA36fpGJS.webp',
+            'https://i.giphy.com/qBVEww0YjwWyI.webp',
+            'https://i.giphy.com/3ohjV5uukLAvnhS7vy.webp',
+
+
+
+
+
         ];
 
         document.getElementById('spin').addEventListener('click', () => {
-            // Отменяем предыдущую анимацию, если она есть
-            if (currentAnimationTimeout) {
-                clearTimeout(currentAnimationTimeout);
-                currentAnimationTimeout = null;
-            }
+            if (isSpinning) return;
 
-            // Скрываем текущую анимацию
-            animation.style.display = 'none';
-
-            // Disable button during spin
+            isSpinning = true;
             document.getElementById('spin').disabled = true;
             document.getElementById('result').textContent = '';
+            animation.style.display = 'none';
 
-            // Spin animation
             let spins = 0;
             const spinInterval = setInterval(() => {
                 reels.forEach(reel => {
@@ -213,50 +237,44 @@
                     clearInterval(spinInterval);
                     checkResult();
                     document.getElementById('spin').disabled = false;
+                    isSpinning = false;
                 }
             }, 100);
         });
 
-        // Обработчик для кнопки "НЕ НАЖИМАТЬ"
         document.getElementById('dontPressBtn').addEventListener('click', () => {
-            window.open('https://avia.tutu.ru/f/Moskva/Samara/?class=Y&travelers=1&route[0]=491-23082025-74', '_blank');
+            window.open('https://vk.cc/cOtE6K', '_blank');
         });
 
         function checkResult() {
             const values = reels.map(reel => reel.textContent);
 
             if (values[0] === values[1] && values[1] === values[2]) {
-                // Выигрыш
                 const randomText = winTexts[Math.floor(Math.random() * winTexts.length)];
                 const randomAnimation = winAnimations[Math.floor(Math.random() * winAnimations.length)];
+                showAnimation(randomAnimation, randomText, true);
 
-                showAnimation(randomAnimation, randomText);
-                document.getElementById('result').textContent = randomText;
 
-                // Можно отправить данные в бота
-                if (tg) {
-                    tg.sendData(JSON.stringify({ win: true, combination: values[0] }));
-                }
             } else {
-                // Проигрыш
                 const randomText = loseTexts[Math.floor(Math.random() * loseTexts.length)];
                 const randomAnimation = loseAnimations[Math.floor(Math.random() * loseAnimations.length)];
-
-                showAnimation(randomAnimation, randomText);
-                document.getElementById('result').textContent = randomText;
+                showAnimation(randomAnimation, randomText, false);
             }
         }
 
-        function showAnimation(gifUrl, text) {
-            animationGif.src = gifUrl;
-            animationText.textContent = text;
+        function showAnimation(gifUrl, text, isWin) {
+            // Если это новая анимация, обновляем содержимое
+            if (currentAnimationUrl !== gifUrl) {
+                animationGif.src = gifUrl;
+                animationText.textContent = text;
+                currentAnimationUrl = gifUrl;
+            }
+
+
             animation.style.display = 'flex';
 
-            // Устанавливаем таймер для автоматического скрытия через 3 секунды
-            currentAnimationTimeout = setTimeout(() => {
-                animation.style.display = 'none';
-                currentAnimationTimeout = null;
-            }, 3000);
+            // Не устанавливаем таймер для автоматического скрытия
+            // Анимация будет показываться до следующего нажатия на SPIN
         }
     </script>
 </body>
